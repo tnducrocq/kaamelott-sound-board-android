@@ -1,94 +1,82 @@
 package fr.tnducrocq.kaamelott_soundboard;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import com.github.florent37.materialviewpager.MaterialViewPager;
+import com.github.florent37.materialviewpager.header.HeaderDesign;
 
-import fr.tnducrocq.kaamelott_soundboard.model.Sound;
-import fr.tnducrocq.kaamelott_soundboard.model.SoundProvider;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import fr.tnducrocq.kaamelott_soundboard.fragment.AlphaRecyclerViewFragment;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView mListView;
+    @BindView(R.id.materialViewPager)
+    MaterialViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("");
+        ButterKnife.bind(this);
 
-        final Context context = this;
+        final Toolbar toolbar = mViewPager.getToolbar();
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
 
-        // Get data to display
-        final ArrayList<Sound> recipeList = SoundProvider.getSounds(this);
 
-        // Create adapter
-        SoundAdapter adapter = new SoundAdapter(this, recipeList);
-
-        // Create list view
-        mListView = (ListView) findViewById(R.id.sound_list_view);
-        mListView.setAdapter(adapter);
-
-        // Set what happens when a list view item is clicked
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mViewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
 
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Sound sound = recipeList.get(position);
-                SoundPoolPlayer.getInstance().start(context, sound.fileName);
-
-                /*Intent detailIntent = new Intent(context, SoundDetailActivity.class);
-                detailIntent.putExtra("title", sound.title);
-                detailIntent.putExtra("url", sound.fileName);
-                startActivity(detailIntent);*/
+            public Fragment getItem(int position) {
+                switch (position % getCount()) {
+                    case 0:
+                        return AlphaRecyclerViewFragment.newInstance();
+                    case 1:
+                        return AlphaRecyclerViewFragment.newInstance();
+                    default:
+                        return AlphaRecyclerViewFragment.newInstance();
+                }
             }
 
+            @Override
+            public int getCount() {
+                return 2;
+            }
+
+            @Override
+            public CharSequence getPageTitle(int position) {
+                switch (position % getCount()) {
+                    case 0:
+                        return "Alphabétique";
+                    case 1:
+                        return "Personnage";
+                }
+                return "";
+            }
         });
-    }
-}
 
-class SoundPoolPlayer {
+        mViewPager.setMaterialViewPagerListener(new MaterialViewPager.Listener() {
+            @Override
+            public HeaderDesign getHeaderDesign(int page) {
+                switch (page) {
+                    case 0:
+                        return HeaderDesign.fromColorResAndUrl(R.color.colorPrimary, "http://www.demotivateur.fr/images-buzz/4771/7d70499bb048568c5dzd6d12d5b89aafbb6.jpg");
+                    case 1:
+                        return HeaderDesign.fromColorResAndUrl(R.color.colorPrimary, "http://savemybrain.net/v2/wp-content/uploads/2012/04/arthur.jpg");
+                }
+                return null;
+            }
+        });
 
-    public static final String TAG = MainActivity.class.getSimpleName();
-
-    private SoundPoolPlayer() {}
-    private static class SingletonHolder {
-        private final static SoundPoolPlayer instance = new SoundPoolPlayer();
-    }
-    public static SoundPoolPlayer getInstance() {
-        return SingletonHolder.instance;
-    }
-
-    private MediaPlayer mediaPlayer;
-/*
-    public void start(Context context, Sound sound) {
-        start(context, sound.fileName);
-    }*/
-
-    public void start(Context context, String fileName) {
-
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try(AssetFileDescriptor afd = context.getAssets().openFd(fileName) ) {
-            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-            mediaPlayer.prepare(); // might take long! (for buffering, etc)
-            mediaPlayer.start();
-
-        } catch (IOException e) {
-            Log.e(TAG, "", e);
-        }
+        mViewPager.getViewPager().setOffscreenPageLimit(mViewPager.getViewPager().getAdapter().getCount());
+        mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
     }
 }
