@@ -1,82 +1,64 @@
 package fr.tnducrocq.kaamelott_soundboard;
 
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.github.florent37.materialviewpager.MaterialViewPager;
-import com.github.florent37.materialviewpager.header.HeaderDesign;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import fr.tnducrocq.kaamelott_soundboard.fragment.AlphaRecyclerViewFragment;
-
+import de.greenrobot.event.EventBus;
+import fr.tnducrocq.kaamelott_soundboard.fragment.AphaRecyclerViewFragment;
+import fr.tnducrocq.kaamelott_soundboard.model.QueryEvent;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.materialViewPager)
-    MaterialViewPager mViewPager;
+
+    public static final String FRAGMENT_TAG = "single";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setTitle("");
-        ButterKnife.bind(this);
+        //  setTitle("");
+        //ButterKnife.bind(this);
 
-        final Toolbar toolbar = mViewPager.getToolbar();
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
+        Fragment fragment = AphaRecyclerViewFragment.newInstance();
 
+        Bundle args = new Bundle();
+        args.putString("sortMode", "alpha");
+        fragment.setArguments(args);
 
-        mViewPager.getViewPager().setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+        getFragmentManager().beginTransaction().add(R.id.container_fragment, fragment).commit();
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public Fragment getItem(int position) {
-                switch (position % getCount()) {
-                    case 0:
-                        return AlphaRecyclerViewFragment.newInstance();
-                    case 1:
-                        return AlphaRecyclerViewFragment.newInstance();
-                    default:
-                        return AlphaRecyclerViewFragment.newInstance();
-                }
+            public boolean onQueryTextSubmit(String query) {
+                EventBus.getDefault().post(new QueryEvent(query));
+
+                //if you want to collapse the searchview
+                invalidateOptionsMenu();
+                return false;
             }
 
             @Override
-            public int getCount() {
-                return 2;
-            }
-
-            @Override
-            public CharSequence getPageTitle(int position) {
-                switch (position % getCount()) {
-                    case 0:
-                        return "Alphabétique";
-                    case 1:
-                        return "Personnage";
-                }
-                return "";
+            public boolean onQueryTextChange(String query) {
+                EventBus.getDefault().post(new QueryEvent(query));
+                return false;
             }
         });
 
-        mViewPager.setMaterialViewPagerListener(new MaterialViewPager.Listener() {
-            @Override
-            public HeaderDesign getHeaderDesign(int page) {
-                switch (page) {
-                    case 0:
-                        return HeaderDesign.fromColorResAndUrl(R.color.colorPrimary, "http://www.demotivateur.fr/images-buzz/4771/7d70499bb048568c5dzd6d12d5b89aafbb6.jpg");
-                    case 1:
-                        return HeaderDesign.fromColorResAndUrl(R.color.colorPrimary, "http://savemybrain.net/v2/wp-content/uploads/2012/04/arthur.jpg");
-                }
-                return null;
-            }
-        });
-
-        mViewPager.getViewPager().setOffscreenPageLimit(mViewPager.getViewPager().getAdapter().getCount());
-        mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
+        return true;
     }
 }

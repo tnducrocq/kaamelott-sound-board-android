@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import fr.tnducrocq.kaamelott_soundboard.model.base.BaseModel;
-import fr.tnducrocq.kaamelott_soundboard.model.base.BaseModelFactory;
 
 /**
  * Created by tony on 29/05/2017.
@@ -60,11 +59,4 @@ public class Sound extends BaseModel implements Parcelable {
             return new Sound[size];
         }
     };
-}
-
-class SoundFactory extends BaseModelFactory<Sound> {
-    @Override
-    public Sound create() {
-        return new Sound();
-    }
 }

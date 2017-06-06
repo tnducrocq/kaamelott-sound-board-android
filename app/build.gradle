@@ -28,16 +28,19 @@ android {
 dependencies {
 
     compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
-    compile('com.github.florent37:materialviewpager:1.2.0@aar') {
+    /*compile('com.github.florent37:materialviewpager:1.2.0@aar') {
         transitive = true
-    }
+    }*/
     compile 'com.jakewharton:butterknife:8.6.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
     
+    compile group: 'de.greenrobot', name: 'eventbus', version: '2.4.1'
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:cardview-v7:25.+'
 
     testCompile 'junit:junit:4.12'
 }

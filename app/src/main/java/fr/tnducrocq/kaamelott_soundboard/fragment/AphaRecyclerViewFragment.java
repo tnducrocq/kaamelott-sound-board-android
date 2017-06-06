@@ -1,9 +1,9 @@
 package fr.tnducrocq.kaamelott_soundboard.fragment;
 
+import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,33 +11,38 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import fr.tnducrocq.kaamelott_soundboard.R;
 import fr.tnducrocq.kaamelott_soundboard.SoundRecyclerViewAdapter;
+import fr.tnducrocq.kaamelott_soundboard.model.QueryEvent;
 import fr.tnducrocq.kaamelott_soundboard.model.Sound;
 import fr.tnducrocq.kaamelott_soundboard.model.SoundProvider;
 
-public class AlphaRecyclerViewFragment extends Fragment {
+public class AphaRecyclerViewFragment extends Fragment {
 
     private static final boolean GRID_LAYOUT = false;
 
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
-    public static AlphaRecyclerViewFragment newInstance() {
-        return new AlphaRecyclerViewFragment();
+    private String sortMode;
+
+    public static AphaRecyclerViewFragment newInstance() {
+        return new AphaRecyclerViewFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_alpha, container, false);
+
+        sortMode = getArguments().getString("sortMode");
+        return inflater.inflate(R.layout.fragment_recycler, container, false);
     }
 
     @Override
@@ -54,16 +59,53 @@ public class AlphaRecyclerViewFragment extends Fragment {
         new KaamelottAsyncTask().execute();
     }
 
-    private class KaamelottAsyncTask extends AsyncTask<Void, String, List<Sound>> {
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEvent(QueryEvent event) {
+
+        new KaamelottAsyncTask().execute(event.getQuery());
+
+    }
+
+    private class KaamelottAsyncTask extends AsyncTask<String, String, List<Sound>> {
 
         @Override
-        protected List<Sound> doInBackground(Void... params) {
+        protected List<Sound> doInBackground(String... params) {
             try {
                 List<Sound> sounds = SoundProvider.getSounds();
+                if (params.length > 0) {
+                    String query = params[0];
+
+                    List<Sound> origin = sounds;
+                    sounds = new ArrayList<>();
+                    for (Sound sound : origin) {
+                        if (sound.character.toLowerCase().contains(query.toLowerCase()) || sound.title.toLowerCase().contains(query.toLowerCase())) {
+                            sounds.add(sound);
+                        }
+                    }
+                }
+
+
                 Collections.sort(sounds, new Comparator<Sound>() {
                     @Override
                     public int compare(Sound o1, Sound o2) {
-                        return o1.title.compareTo(o2.title);
+                        if ("alpha".equals(sortMode)) {
+                            return o1.title.compareTo(o2.title);
+                        } else if ("personnage".equals(sortMode)) {
+                            return o1.character.compareTo(o2.character);
+                        } else {
+                            return o1.title.compareTo(o2.title);
+                        }
                     }
                 });
                 return sounds;
@@ -78,7 +120,6 @@ public class AlphaRecyclerViewFragment extends Fragment {
             if (soundList == null) {
                 return;
             }
-            mRecyclerView.addItemDecoration(new MaterialViewPagerHeaderDecorator());
             mRecyclerView.setAdapter(new SoundRecyclerViewAdapter(soundList));
         }
     }
