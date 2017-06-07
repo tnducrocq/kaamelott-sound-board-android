@@ -12,10 +12,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import de.greenrobot.event.EventBus;
-import fr.tnducrocq.kaamelott_soundboard.fragment.RecyclerViewFragment;
 import fr.tnducrocq.kaamelott_soundboard.fragment.BusEvent;
+import fr.tnducrocq.kaamelott_soundboard.fragment.RecyclerViewFragment;
 import fr.tnducrocq.kaamelott_soundboard.fragment.UpdateDataFragment;
 import fr.tnducrocq.kaamelott_soundboard.model.Sound;
 
@@ -29,15 +30,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //setTitle("");
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setVisibility(View.GONE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //toolbar.setNavigationIcon(android.R.drawable.ic_drawer);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.app_name);
@@ -103,5 +103,6 @@ public class MainActivity extends AppCompatActivity {
         getFragmentManager().beginTransaction().add(R.id.container_fragment, fragment).commit();
 
         toolbar.setVisibility(View.VISIBLE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }

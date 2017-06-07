@@ -1,6 +1,7 @@
 package fr.tnducrocq.kaamelott_soundboard;
 
 import android.app.Application;
+import android.content.Context;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,12 +15,14 @@ import fr.tnducrocq.kaamelott_soundboard.disklrucache.SimpleDiskCache;
 public class KaamelottApplication extends Application {
 
     //public static Bus bus;
+    public static Context applicationContext;
     public static SimpleDiskCache soundCache;
     public static SimpleDiskCache jsonCache;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        applicationContext = this;
 
         try {
             //bus = new Bus();

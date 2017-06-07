@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -68,6 +69,7 @@ public class SoundProvider {
         } finally {
             soundsConnection.disconnect();
         }
+
         List<Sound> downloadList = new ArrayList<>();
         for (Sound sound : soundList) {
             try {
@@ -92,7 +94,13 @@ public class SoundProvider {
     }
 
     private static boolean downloadSoundIsNeeded(Sound sound) throws IOException {
-        return !KaamelottApplication.soundCache.contains(sound.fileName);
+        try {
+            KaamelottApplication.applicationContext.getAssets().openFd(sound.fileName);
+            return false;
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, sound.fileName + " is missing in assets directories");
+            return !KaamelottApplication.soundCache.contains(sound.fileName);
+        }
     }
 
     private static void downloadSound(Sound sound) throws IOException {
