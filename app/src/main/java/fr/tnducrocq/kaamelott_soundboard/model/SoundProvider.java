@@ -1,5 +1,6 @@
 package fr.tnducrocq.kaamelott_soundboard.model;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
@@ -10,6 +11,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -27,23 +29,26 @@ public class SoundProvider {
 
     private static final String BASE_URL = "https://raw.githubusercontent.com/tnducrocq/kaamelott-soundboard/descripteur/sounds";
     private static final String SOUNDS_KEY = "sounds.json";
+    private static final List<Sound> sounds = new ArrayList<>();
 
-    public static List<Sound> getSounds() throws IOException, JSONException {
+    public static void initSounds(@NonNull Delegate delegate) throws IOException, JSONException {
+        sounds.clear();
         try {
-            return requestSounds();
+            sounds.addAll(requestSounds(delegate));
         } catch (Exception e) {
+            Log.e(TAG, "ERROR", e);
             final BaseModelList<Sound> soundList = new BaseModelList<>();
             if (KaamelottApplication.jsonCache.contains(SOUNDS_KEY)) {
                 SimpleDiskCache.StringEntry entry = KaamelottApplication.jsonCache.getString(SOUNDS_KEY);
                 String jsonString = entry.getString();
                 JSONArray array = new JSONArray(jsonString);
                 soundList.parse(new SoundFactory(), array);
+                sounds.addAll(soundList);
             }
-            return soundList;
         }
     }
 
-    public static List<Sound> requestSounds() throws IOException, JSONException {
+    public static List<Sound> requestSounds(@NonNull Delegate delegate) throws IOException, JSONException {
 
         URL soundsURL = new URL(BASE_URL + "/" + SOUNDS_KEY);
         HttpsURLConnection soundsConnection = (HttpsURLConnection) soundsURL.openConnection();
@@ -59,34 +64,60 @@ public class SoundProvider {
             soundList.parse(new SoundFactory(), array);
 
             KaamelottApplication.jsonCache.put(SOUNDS_KEY, jsonString);
+            delegate.jsonParsed();
         } finally {
             soundsConnection.disconnect();
         }
-
+        List<Sound> downloadList = new ArrayList<>();
         for (Sound sound : soundList) {
             try {
-                downloadSoundIfNeeded(sound);
+                if (downloadSoundIsNeeded(sound)) {
+                    downloadList.add(sound);
+                }
             } catch (IOException e) {
                 Log.e(TAG, "ERROR", e);
             }
         }
 
+        for (int i = 0; i < downloadList.size(); i++) {
+            Sound sound = downloadList.get(i);
+            try {
+                downloadSound(sound);
+                delegate.soundDownloaded(sound.fileName, i + 1, downloadList.size());
+            } catch (IOException e) {
+                Log.e(TAG, "ERROR", e);
+            }
+        }
         return soundList;
     }
 
-    private static void downloadSoundIfNeeded(Sound sound) throws IOException {
-        if (!KaamelottApplication.soundCache.contains(sound.fileName)) {
-            URL url = new URL(BASE_URL + "/" + sound.fileName);
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.setDoOutput(false);
-            connection.setRequestMethod("GET");
-            try (InputStream in = new BufferedInputStream(connection.getInputStream())) {
-                KaamelottApplication.soundCache.put(sound.fileName, in);
-                Log.i(TAG, String.format("%s is downloaded", sound.fileName));
-            } finally {
-                connection.disconnect();
-            }
+    private static boolean downloadSoundIsNeeded(Sound sound) throws IOException {
+        return !KaamelottApplication.soundCache.contains(sound.fileName);
+    }
+
+    private static void downloadSound(Sound sound) throws IOException {
+        URL url = new URL(BASE_URL + "/" + sound.fileName);
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.setDoInput(true);
+        connection.setDoOutput(false);
+        connection.setRequestMethod("GET");
+        try (InputStream in = new BufferedInputStream(connection.getInputStream())) {
+            KaamelottApplication.soundCache.put(sound.fileName, in);
+            Log.i(TAG, String.format("%s is downloaded", sound.fileName));
+        } finally {
+            connection.disconnect();
         }
+    }
+
+    public static List<Sound> getSounds() {
+        return sounds;
+    }
+
+    public static interface Delegate {
+
+        public void jsonParsed();
+
+        public void soundDownloaded(String fileName, int current, int total);
+
     }
 }

@@ -13,7 +13,7 @@ import fr.tnducrocq.kaamelott_soundboard.disklrucache.SimpleDiskCache;
 
 public class KaamelottApplication extends Application {
 
-
+    //public static Bus bus;
     public static SimpleDiskCache soundCache;
     public static SimpleDiskCache jsonCache;
 
@@ -22,6 +22,7 @@ public class KaamelottApplication extends Application {
         super.onCreate();
 
         try {
+            //bus = new Bus();
             soundCache = SimpleDiskCache.open(new File(getCacheDir() + "/sounds"), 1, Long.MAX_VALUE);
             jsonCache = SimpleDiskCache.open(new File(getCacheDir() + "/jsons"), 1, Long.MAX_VALUE);
         } catch (IOException e) {
