@@ -19,10 +19,10 @@ import fr.tnducrocq.kaamelott_soundboard.R;
 import fr.tnducrocq.kaamelott_soundboard.model.Sound;
 import fr.tnducrocq.kaamelott_soundboard.model.SoundProvider;
 
-public class UpdateDataFragment extends Fragment {
+public class LoadDataFragment extends Fragment {
 
-    public static UpdateDataFragment newInstance() {
-        return new UpdateDataFragment();
+    public static LoadDataFragment newInstance() {
+        return new LoadDataFragment();
     }
 
     @BindView(R.id.waiting_text)
@@ -32,7 +32,7 @@ public class UpdateDataFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_waiting_view, container, false);
+        View view = inflater.inflate(R.layout.fragment_data, container, false);
         unbinder = ButterKnife.bind(this, view);
 
         new KaamelottAsyncTask().execute();

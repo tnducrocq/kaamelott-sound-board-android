@@ -12,18 +12,18 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import de.greenrobot.event.EventBus;
+import fr.tnducrocq.kaamelott_soundboard.PersonRecyclerViewAdapter;
 import fr.tnducrocq.kaamelott_soundboard.R;
 import fr.tnducrocq.kaamelott_soundboard.SoundRecyclerViewAdapter;
 import fr.tnducrocq.kaamelott_soundboard.model.Sound;
 
-public class RecyclerViewFragment extends Fragment {
+public class SoundRecyclerViewFragment extends Fragment {
 
     private static final boolean GRID_LAYOUT = false;
 
@@ -35,32 +35,32 @@ public class RecyclerViewFragment extends Fragment {
 
     private Unbinder unbinder;
 
-    public static RecyclerViewFragment newInstance() {
-        return new RecyclerViewFragment();
+    public static SoundRecyclerViewFragment newInstance() {
+        return new SoundRecyclerViewFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recycler, container, false);
+        View view = inflater.inflate(R.layout.fragment_sounds, container, false);
         unbinder = ButterKnife.bind(this, view);
-
         sortMode = getArguments().getString("sortMode");
+
         soundList = new ArrayList<>();
         Collections.addAll(soundList, (Sound[]) getArguments().getParcelableArray("soundArray"));
-        Collections.sort(soundList, new Comparator<Sound>() {
-            @Override
-            public int compare(Sound o1, Sound o2) {
-                if ("alpha".equals(sortMode)) {
-                    return o1.title.toLowerCase().compareTo(o2.title.toLowerCase());
-                } else if ("personnage".equals(sortMode)) {
-                    return o1.character.toLowerCase().compareTo(o2.character.toLowerCase());
-                } else {
-                    return o1.title.toLowerCase().compareTo(o2.title.toLowerCase());
-                }
-            }
-        });
-        mRecyclerView.setAdapter(new SoundRecyclerViewAdapter(soundList));
+        setAdapter(soundList);
         return view;
+    }
+
+    private void setAdapter(List<Sound> soundList) {
+        if ("alpha".equals(sortMode)) {
+            mRecyclerView.setAdapter(new SoundRecyclerViewAdapter(soundList));
+        } else if ("person".equals(sortMode)) {
+            PersonRecyclerViewAdapter adapter = new PersonRecyclerViewAdapter();
+            adapter.init(soundList);
+            mRecyclerView.setAdapter(adapter);
+        } else {
+            mRecyclerView.setAdapter(new SoundRecyclerViewAdapter(soundList));
+        }
     }
 
     @Override
@@ -96,16 +96,13 @@ public class RecyclerViewFragment extends Fragment {
     }
 
     public void onEvent(BusEvent.QueryEvent event) {
-
         String query = event.getQuery();
-
         List<Sound> filtered = new ArrayList<>();
         for (Sound sound : soundList) {
             if (sound.character.toLowerCase().contains(query.toLowerCase()) || sound.title.toLowerCase().contains(query.toLowerCase())) {
                 filtered.add(sound);
             }
         }
-
-        mRecyclerView.setAdapter(new SoundRecyclerViewAdapter(filtered));
+        setAdapter(filtered);
     }
 }

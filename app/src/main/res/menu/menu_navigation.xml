@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+
+            android:id="@+id/alpha"
+            android:title="Alphabétique"/>
+        <item
+            android:id="@+id/character"
+            android:title="Personnage"/>
+        <item
+            android:id="@+id/random"
+            android:title="Aléatoire"/>
+        <item
+            android:id="@+id/credit"
+            android:title="Crédit"/>
+    </group>
+</menu>

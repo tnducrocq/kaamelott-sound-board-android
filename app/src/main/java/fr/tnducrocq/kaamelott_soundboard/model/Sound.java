@@ -2,9 +2,13 @@ package fr.tnducrocq.kaamelott_soundboard.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.tnducrocq.kaamelott_soundboard.model.base.BaseModel;
 
@@ -28,6 +32,22 @@ public class Sound extends BaseModel implements Parcelable {
         character = in.readString();
         fileName = in.readString();
         episode = in.readString();
+    }
+
+    public String getCharacter() {
+        return character;
+    }
+
+    public String getEpisode() {
+        return episode;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public void parse(JSONObject object) throws JSONException {
@@ -59,4 +79,18 @@ public class Sound extends BaseModel implements Parcelable {
             return new Sound[size];
         }
     };
+
+    public static class SoundCollection {
+
+        public static List<Sound> filterByCharacter(List<Sound> sounds, @NonNull String character) {
+            List<Sound> result = new ArrayList<>();
+            for (Sound sound : sounds) {
+                if (character.equals(sound.getCharacter())) {
+                    result.add(sound);
+                }
+            }
+            return result;
+        }
+
+    }
 }

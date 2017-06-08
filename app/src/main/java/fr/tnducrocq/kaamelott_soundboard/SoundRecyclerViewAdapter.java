@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -19,23 +21,28 @@ import fr.tnducrocq.kaamelott_soundboard.player.SoundPoolPlayer;
 
 public class SoundRecyclerViewAdapter extends RecyclerView.Adapter<SoundRecyclerViewAdapter.SoundViewHolder> {
 
-
     private static final String PACKAGE_NAME = "fr.tnducrocq.kaamelott_soundboard";
-    List<Sound> contents;
+    List<Sound> soundList;
     Context context;
 
     public SoundRecyclerViewAdapter(List<Sound> contents) {
-        this.contents = contents;
+        soundList = contents;
+        Collections.sort(soundList, new Comparator<Sound>() {
+            @Override
+            public int compare(Sound o1, Sound o2) {
+                return o1.title.toLowerCase().compareTo(o2.title.toLowerCase());
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return contents.size();
+        return soundList.size();
     }
 
     @Override
     public SoundRecyclerViewAdapter.SoundViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_sound_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sound_card, parent, false);
         context = parent.getContext();
 
         return new SoundRecyclerViewAdapter.SoundViewHolder(view) {
@@ -44,7 +51,7 @@ public class SoundRecyclerViewAdapter extends RecyclerView.Adapter<SoundRecycler
 
     @Override
     public void onBindViewHolder(SoundRecyclerViewAdapter.SoundViewHolder holder, int position) {
-        Sound sound = contents.get(position);
+        Sound sound = soundList.get(position);
         holder.bind(context, sound);
     }
 
@@ -75,7 +82,7 @@ public class SoundRecyclerViewAdapter extends RecyclerView.Adapter<SoundRecycler
             characterTextView.setText(person == Person.Other ? sound.character : "");
             episodeTextView.setText(sound.episode);
 
-            int imageResource = context.getResources().getIdentifier(person.getAsset(), "drawable", PACKAGE_NAME);
+            int imageResource = context.getResources().getIdentifier(person.getAssetShort(), "drawable", PACKAGE_NAME);
             Drawable res = context.getResources().getDrawable(imageResource, null);
             characterImageView.setImageDrawable(res);
 
@@ -89,4 +96,5 @@ public class SoundRecyclerViewAdapter extends RecyclerView.Adapter<SoundRecycler
             });
         }
     }
+
 }

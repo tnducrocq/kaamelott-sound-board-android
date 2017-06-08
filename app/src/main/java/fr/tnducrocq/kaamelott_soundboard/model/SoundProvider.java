@@ -39,13 +39,20 @@ public class SoundProvider {
         } catch (Exception e) {
             Log.e(TAG, "ERROR", e);
             final BaseModelList<Sound> soundList = new BaseModelList<>();
+
+            String jsonString = null;
             if (KaamelottApplication.jsonCache.contains(SOUNDS_KEY)) {
                 SimpleDiskCache.StringEntry entry = KaamelottApplication.jsonCache.getString(SOUNDS_KEY);
-                String jsonString = entry.getString();
-                JSONArray array = new JSONArray(jsonString);
-                soundList.parse(new SoundFactory(), array);
-                sounds.addAll(soundList);
+                jsonString = entry.getString();
+            } else {
+                try (InputStream in = KaamelottApplication.applicationContext.getAssets().open(SOUNDS_KEY)) {
+                    jsonString = IOUtils.toString(in);
+                }
             }
+
+            JSONArray array = new JSONArray(jsonString);
+            soundList.parse(new SoundFactory(), array);
+            sounds.addAll(soundList);
         }
     }
 
@@ -55,6 +62,7 @@ public class SoundProvider {
         HttpsURLConnection soundsConnection = (HttpsURLConnection) soundsURL.openConnection();
         soundsConnection.setDoInput(true);
         soundsConnection.setDoOutput(false);
+        soundsConnection.setConnectTimeout(5000);
         soundsConnection.setRequestProperty("Content-Type", "application/json");
         soundsConnection.setRequestMethod("GET");
 

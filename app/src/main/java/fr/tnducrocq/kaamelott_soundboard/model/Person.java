@@ -9,29 +9,34 @@ import java.util.Map;
 
 public enum Person {
 
-    Arthur("Arthur", "arthur_150x150"),//
-    Bohort("Bohort", "bohort_150x150"),//
-    Seli("Séli", "dame_seli_150x150"),//
-    Gauvain("Gauvain", "gauvain_150x150"),//
-    Guenievre("Guenièvre", "guenievre_150x150"),//
-    Guethenoc("Guethenoc", "guethenoc_150x150"),//
-    Kadoc("Kadoc", "kadoc_150x150"),//
-    Karadoc("Karadoc", "karadoc_150x150"),//
-    Lancelot("Lancelot", "lancelot_150x150"),//
-    Le_Tavernier("Le tavernier", "le_tavernier_150x150"),//
-    Leodagan("Léodagan", "leodagan_150x150"),//
-    MaitreDarme("Le Maître d’armes", "maitre_d_armes_150x150"),//
-    Merlin("Merlin", "merlin_150x150"),//
-    Perceval("Perceval", "perceval_150x150"),//
-    Pere_blaise("Père Blaise", "pere_blaise_150x150"),//
-    Roi_burgonde("Le Roi Burgonde", "roi_burgonde_150x150"),//
-    Roparzh("Roparzh", "roparzh_150x150"),//
-    Yvain("Yvain", "yvain_150x150"),//
+    Arthur("Arthur", "arthur"),//
+    Bohort("Bohort", "bohort"),//
+    Caius_Camillus("Caius", "caius_camillus"),//
+    Dame_seli("Dame Séli", "dame_seli"),//
+    Elias_de_kelliwich("Elias de Kelliwic'h", "elias_de_kelliwich"),//
+    Gauvain("Gauvain", "gauvain"),//
+    Guenievre("Guenièvre", "guenievre"),//
+    Guethenoc("Guethenoc", "guethenoc"),//
+    Interprete("L'Interprète", "interprete"),//
+    Kadoc("Kadoc", "kadoc"),//
+    Karadoc("Karadoc", "karadoc"),//
+    Lancelot("Lancelot", "lancelot"),//
+    Leodagan("Léodagan", "leodagan"),//
+    Loth_d_orcanie("loth_d_orcanie", "loth_d_orcanie"),//
+    MaitreDarme("Le Maître d’armes", "maitre_d_armes"),//
+    Merlin("Merlin", "merlin"),//
+    Perceval("Perceval", "perceval"),//
+    Pere_blaise("Père Blaise", "pere_blaise"),//
+    Roi_burgonde("Le Roi Burgonde", "roi_burgonde"),//
+    Roparzh("Roparzh", "roparzh"),//
+    Tavernier("Le tavernier", "tavernier"),//
+    Venec("Venec", "venec"),//
+    Yvain("Yvain", "yvain"),//
 
-    Other("Other", "kaamelott_150x150");
+    Other("Other", "kaamelott");
 
-    String name;
-    String asset;
+    private String name;
+    private String asset;
 
     private Person(String name, String asset) {
         this.name = name;
@@ -42,8 +47,12 @@ public enum Person {
         return name;
     }
 
-    public String getAsset() {
-        return asset;
+    public String getAssetShort() {
+        return asset + "_short";
+    }
+
+    public String getAssetLong() {
+        return asset + "_long";
     }
 
     // Reverse-lookup map for getting a day from an abbreviation

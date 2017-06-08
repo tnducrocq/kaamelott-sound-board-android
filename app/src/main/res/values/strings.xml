@@ -6,4 +6,15 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_search_results">SearchResultsActivity</string>
     <string name="action_search">Search Text</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
+    <string name="title_activity_credit">Crédit</string>
+    <string name="large_text">
+        "Application mobile permettant de jouer des répliques de Kaamelott.\n"
+        "Les fichiers sont repris sur le GitHub de 2ec0b4\nhttps://github.com/2ec0b4/kaamelott-soundboard\n"
+
+        "Merci, de rien, au revoir m'sieur dame\n"
+
+    </string>
 </resources>
