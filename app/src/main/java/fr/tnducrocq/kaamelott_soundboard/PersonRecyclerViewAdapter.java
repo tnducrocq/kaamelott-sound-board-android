@@ -42,7 +42,7 @@ public class PersonRecyclerViewAdapter extends SectionedRecyclerViewAdapter<Pers
 
     public void init(List<Sound> contents) {
         this.sections = new ArrayList<>();
-        this.context = KaamelottApplication.applicationContext;
+        this.context = KaamelottApplication.getInstance();
 
         Set<String> uniqPersons = new HashSet<>();
         for (Sound sound : contents) {

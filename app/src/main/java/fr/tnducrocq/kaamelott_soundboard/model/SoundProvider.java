@@ -3,14 +3,19 @@ package fr.tnducrocq.kaamelott_soundboard.model;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.orhanobut.hawk.Hawk;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +23,6 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 
 import fr.tnducrocq.kaamelott_soundboard.KaamelottApplication;
-import fr.tnducrocq.kaamelott_soundboard.disklrucache.SimpleDiskCache;
 import fr.tnducrocq.kaamelott_soundboard.model.base.BaseModelList;
 
 /**
@@ -28,7 +32,7 @@ public class SoundProvider {
 
     public static final String TAG = Sound.class.getSimpleName();
 
-    private static final String BASE_URL = "https://raw.githubusercontent.com/tnducrocq/kaamelott-soundboard/descripteur/sounds";
+    private static final String BASE_URL = "https://raw.githubusercontent.com/2ec0b4/kaamelott-soundboard/master/sounds";
     private static final String SOUNDS_KEY = "sounds.json";
     private static final List<Sound> sounds = new ArrayList<>();
 
@@ -41,11 +45,10 @@ public class SoundProvider {
             final BaseModelList<Sound> soundList = new BaseModelList<>();
 
             String jsonString = null;
-            if (KaamelottApplication.jsonCache.contains(SOUNDS_KEY)) {
-                SimpleDiskCache.StringEntry entry = KaamelottApplication.jsonCache.getString(SOUNDS_KEY);
-                jsonString = entry.getString();
+            if (Hawk.contains(SOUNDS_KEY)) {
+                jsonString = Hawk.get(SOUNDS_KEY);
             } else {
-                try (InputStream in = KaamelottApplication.applicationContext.getAssets().open(SOUNDS_KEY)) {
+                try (InputStream in = KaamelottApplication.getInstance().getAssets().open(SOUNDS_KEY)) {
                     jsonString = IOUtils.toString(in);
                 }
             }
@@ -72,7 +75,7 @@ public class SoundProvider {
             JSONArray array = new JSONArray(jsonString);
             soundList.parse(new SoundFactory(), array);
 
-            KaamelottApplication.jsonCache.put(SOUNDS_KEY, jsonString);
+            Hawk.put(SOUNDS_KEY, jsonString);
             delegate.jsonParsed();
         } finally {
             soundsConnection.disconnect();
@@ -103,11 +106,11 @@ public class SoundProvider {
 
     private static boolean downloadSoundIsNeeded(Sound sound) throws IOException {
         try {
-            KaamelottApplication.applicationContext.getAssets().openFd(sound.fileName);
+            KaamelottApplication.getInstance().getAssets().openFd(sound.fileName);
             return false;
         } catch (FileNotFoundException e) {
             Log.d(TAG, sound.fileName + " is missing in assets directories");
-            return !KaamelottApplication.soundCache.contains(sound.fileName);
+            return !isSoundContains(sound.fileName);
         }
     }
 
@@ -117,8 +120,12 @@ public class SoundProvider {
         connection.setDoInput(true);
         connection.setDoOutput(false);
         connection.setRequestMethod("GET");
-        try (InputStream in = new BufferedInputStream(connection.getInputStream())) {
-            KaamelottApplication.soundCache.put(sound.fileName, in);
+
+        File directory = KaamelottApplication.getInstance().getFilesDir();
+        File localFile = new File(directory, sound.fileName);
+        localFile.createNewFile();
+        try (InputStream in = new BufferedInputStream(connection.getInputStream()); OutputStream out = new FileOutputStream(localFile)) {
+            IOUtils.copy(in, out);
             Log.i(TAG, String.format("%s is downloaded", sound.fileName));
         } finally {
             connection.disconnect();
@@ -135,5 +142,11 @@ public class SoundProvider {
 
         public void soundDownloaded(String fileName, int current, int total);
 
+    }
+
+    public static boolean isSoundContains(String fileName) {
+        File directory = KaamelottApplication.getInstance().getFilesDir();
+        File file = new File(directory, fileName);
+        return file.exists();
     }
 }

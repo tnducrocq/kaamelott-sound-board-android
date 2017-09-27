@@ -32,18 +32,17 @@ android {
 dependencies {
 
     compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
-    /*compile('com.github.florent37:materialviewpager:1.2.0@aar') {
-        transitive = true
-    }*/
-    compile('com.mikepenz:materialdrawer:5.9.2@aar') {
-        transitive = true
-    }
+
+    compile 'com.orhanobut:hawk:2.0.1'
 
     compile 'com.jakewharton:butterknife:8.6.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
 
     compile group: 'de.greenrobot', name: 'eventbus', version: '2.4.1'
     compile 'com.afollestad:sectioned-recyclerview:0.4.4'
+    compile('com.mikepenz:materialdrawer:5.9.2@aar') {
+        transitive = true
+    }
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.+'
