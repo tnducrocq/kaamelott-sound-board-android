@@ -76,7 +76,7 @@ public class LoadDataFragment extends Fragment {
         @Override
         protected void onProgressUpdate(BusEvent.Event... values) {
             super.onProgressUpdate(values);
-            if (values.length == 0) {
+            if (values == null || values.length == 0) {
                 return;
             }
 

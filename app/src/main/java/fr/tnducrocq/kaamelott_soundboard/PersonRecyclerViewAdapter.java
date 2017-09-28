@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.tnducrocq.kaamelott_soundboard.model.Person;
 import fr.tnducrocq.kaamelott_soundboard.model.Sound;
+import fr.tnducrocq.kaamelott_soundboard.model.SoundProvider;
 import fr.tnducrocq.kaamelott_soundboard.player.SoundPoolPlayer;
 
 /**
@@ -174,6 +176,9 @@ public class PersonRecyclerViewAdapter extends SectionedRecyclerViewAdapter<Pers
         @BindView(R.id.episodeTextView)
         public TextView episodeTextView;
 
+        @BindView(R.id.favoriteImageButton)
+        public ImageButton favoriteImageButton;
+
         public SoundViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -191,6 +196,28 @@ public class PersonRecyclerViewAdapter extends SectionedRecyclerViewAdapter<Pers
                     SoundPoolPlayer.getInstance().start(v.getContext(), sound.fileName);
                 }
             });
+
+            initFavoriteImageButton(sound.fileName);
+
+            favoriteImageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (SoundProvider.isFavorite(sound.fileName)) {
+                        SoundProvider.removeFavorite(sound.fileName);
+                    } else {
+                        SoundProvider.addFavorite(sound.fileName);
+                    }
+                    initFavoriteImageButton(sound.fileName);
+                }
+            });
+        }
+
+        private void initFavoriteImageButton(String fileName) {
+            if (SoundProvider.isFavorite(fileName)) {
+                favoriteImageButton.setImageResource(R.drawable.ic_star_black_24dp);
+            } else {
+                favoriteImageButton.setImageResource(R.drawable.ic_star_border_black_24dp);
+            }
         }
     }
 }

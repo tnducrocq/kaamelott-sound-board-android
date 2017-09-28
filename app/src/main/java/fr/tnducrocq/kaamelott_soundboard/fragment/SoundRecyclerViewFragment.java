@@ -18,12 +18,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import de.greenrobot.event.EventBus;
+import fr.tnducrocq.kaamelott_soundboard.FavoriteRecyclerViewAdapter;
 import fr.tnducrocq.kaamelott_soundboard.PersonRecyclerViewAdapter;
 import fr.tnducrocq.kaamelott_soundboard.R;
 import fr.tnducrocq.kaamelott_soundboard.SoundRecyclerViewAdapter;
 import fr.tnducrocq.kaamelott_soundboard.model.Sound;
 
-public class SoundRecyclerViewFragment extends Fragment {
+public class SoundRecyclerViewFragment extends Fragment implements FavoriteRecyclerViewAdapter.FavoriteRecyclerViewAdapterListener {
 
     private static final boolean GRID_LAYOUT = false;
 
@@ -51,16 +52,28 @@ public class SoundRecyclerViewFragment extends Fragment {
         return view;
     }
 
-    private void setAdapter(List<Sound> soundList) {
+    private void setAdapter(final List<Sound> soundList) {
         if ("alpha".equals(sortMode)) {
-            mRecyclerView.setAdapter(new SoundRecyclerViewAdapter(soundList));
+            SoundRecyclerViewAdapter adapter = new SoundRecyclerViewAdapter(soundList);
+            mRecyclerView.setAdapter(adapter);
         } else if ("person".equals(sortMode)) {
             PersonRecyclerViewAdapter adapter = new PersonRecyclerViewAdapter();
+            adapter.init(soundList);
+            mRecyclerView.setAdapter(adapter);
+        } else if ("favorite".equals(sortMode)) {
+            FavoriteRecyclerViewAdapter adapter = new FavoriteRecyclerViewAdapter(this);
             adapter.init(soundList);
             mRecyclerView.setAdapter(adapter);
         } else {
             mRecyclerView.setAdapter(new SoundRecyclerViewAdapter(soundList));
         }
+    }
+
+    @Override
+    public void favoritesHasChange() {
+        FavoriteRecyclerViewAdapter adapter = new FavoriteRecyclerViewAdapter(this);
+        adapter.init(soundList);
+        mRecyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -73,8 +86,6 @@ public class SoundRecyclerViewFragment extends Fragment {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         }
         mRecyclerView.setHasFixedSize(true);
-
-
     }
 
     @Override

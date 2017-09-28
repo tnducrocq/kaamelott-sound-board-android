@@ -18,7 +18,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -34,9 +36,17 @@ public class SoundProvider {
 
     private static final String BASE_URL = "https://raw.githubusercontent.com/2ec0b4/kaamelott-soundboard/master/sounds";
     private static final String SOUNDS_KEY = "sounds.json";
+    private static final String FAVORITES_KEY = "favorites.json";
     private static final List<Sound> sounds = new ArrayList<>();
+    private static final Set<String> favorites = new HashSet<>();
 
     public static void initSounds(@NonNull Delegate delegate) throws IOException, JSONException {
+        if (Hawk.contains(FAVORITES_KEY)) {
+            Set<String> tmp = Hawk.get(FAVORITES_KEY);
+            favorites.clear();
+            favorites.addAll(tmp);
+        }
+
         sounds.clear();
         try {
             sounds.addAll(requestSounds(delegate));
@@ -148,5 +158,19 @@ public class SoundProvider {
         File directory = KaamelottApplication.getInstance().getFilesDir();
         File file = new File(directory, fileName);
         return file.exists();
+    }
+
+    public static void addFavorite(String fileName) {
+        favorites.add(fileName);
+        Hawk.put(FAVORITES_KEY, favorites);
+    }
+
+    public static void removeFavorite(String fileName) {
+        favorites.remove(fileName);
+        Hawk.put(FAVORITES_KEY, favorites);
+    }
+
+    public static boolean isFavorite(String fileName) {
+        return favorites.contains(fileName);
     }
 }

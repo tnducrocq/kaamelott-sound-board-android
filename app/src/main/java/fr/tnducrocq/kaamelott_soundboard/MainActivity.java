@@ -3,6 +3,7 @@ package fr.tnducrocq.kaamelott_soundboard;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
@@ -68,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
                     Fragment fragment = SoundRecyclerViewFragment.newInstance();
                     Bundle args = new Bundle();
                     args.putString("sortMode", "alpha");
+                    args.putParcelableArray("soundArray", SoundProvider.getSounds().toArray(new Sound[0]));
+                    fragment.setArguments(args);
+                    getFragmentManager().beginTransaction().replace(R.id.container_fragment, fragment).commit();
+                    mDrawerLayout.closeDrawers();
+                } else if (id == R.id.favorite) {
+                    Fragment fragment = SoundRecyclerViewFragment.newInstance();
+                    Bundle args = new Bundle();
+                    args.putString("sortMode", "favorite");
                     args.putParcelableArray("soundArray", SoundProvider.getSounds().toArray(new Sound[0]));
                     fragment.setArguments(args);
                     getFragmentManager().beginTransaction().replace(R.id.container_fragment, fragment).commit();
@@ -149,6 +158,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEvent(BusEvent.Finish event) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(getResources().getColor(R.color.primary));
+        }
+
         Sound[] soundArray = event.soundList.toArray(new Sound[0]);
         Fragment fragment = SoundRecyclerViewFragment.newInstance();
         Bundle args = new Bundle();

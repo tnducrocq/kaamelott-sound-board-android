@@ -12,6 +12,9 @@
             android:id="@+id/random"
             android:title="Aléatoire"/>
         <item
+            android:id="@+id/favorite"
+            android:title="Favoris"/>
+        <item
             android:id="@+id/credit"
             android:title="Crédit"/>
     </group>
