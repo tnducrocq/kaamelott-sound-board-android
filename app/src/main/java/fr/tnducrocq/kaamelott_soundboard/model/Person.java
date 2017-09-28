@@ -22,8 +22,8 @@ public enum Person {
     Karadoc("Karadoc", "karadoc"),//
     Lancelot("Lancelot", "lancelot"),//
     Leodagan("Léodagan", "leodagan"),//
-    Loth_d_orcanie("loth_d_orcanie", "loth_d_orcanie"),//
-    MaitreDarme("Le Maître d’armes", "maitre_d_armes"),//
+    Loth_d_orcanie("Loth", "loth_d_orcanie"),//
+    MaitreDarme("Le Maître d'armes", "maitre_d_armes"),//
     Merlin("Merlin", "merlin"),//
     Perceval("Perceval", "perceval"),//
     Pere_blaise("Père Blaise", "pere_blaise"),//
