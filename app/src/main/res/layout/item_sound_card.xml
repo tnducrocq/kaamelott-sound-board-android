@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
@@ -13,79 +12,133 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp">
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/constraint_view"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/app_margin"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/characterImageView"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/merlin_short"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/characterImageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/arthur_short"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/characterTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/app_margin"
+                        android:gravity="center_vertical"
+                        android:text="New Text"
+                        android:textColor="@color/blue"
+                        android:textSize="18dp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/episodeTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@+id/characterTextView"
+                        android:layout_below="@+id/characterTextView"
+                        android:layout_marginTop="4dp"
+                        android:text="New Text"
+                        android:textSize="16dp"/>
+
+                </RelativeLayout>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/titleTextView"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:minHeight="90dp"
-                android:text="Texte du son"
-                android:textAlignment="viewStart"
-                app:layout_constraintBottom_toTopOf="@id/characterTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/characterImageView"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/app_margin"
+                android:text="New TextNew TextNew TextNew Text"
+                android:textSize="16dp"/>
 
-            <TextView
-                android:id="@+id/characterTextView"
-                android:layout_width="0dp"
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="Nom du personnage"
-                android:textAlignment="viewEnd"
-                app:layout_constraintBottom_toTopOf="@+id/episodeTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/characterImageView"
-                app:layout_constraintTop_toBottomOf="@+id/titleTextView"/>
+                android:orientation="horizontal"
+                android:weightSum="2">
 
-            <TextView
-                android:id="@+id/episodeTextView"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:gravity="center_vertical"
-                android:text="Livre XX, XX - Titre"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/favoriteImageButton"
-                app:layout_constraintStart_toEndOf="@+id/characterImageView"/>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
 
-            <ImageButton
-                android:id="@+id/favoriteImageButton"
-                android:layout_width="44dp"
-                android:layout_height="36dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_star_black_24dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                    <RelativeLayout
+                        android:id="@+id/favoriteImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:orientation="horizontal">
 
-        </android.support.constraint.ConstraintLayout>
+                        <ImageView
+                            android:id="@+id/favoriteImage"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/ic_star_black_24dp"/>
+
+                        <TextView
+                            android:id="@+id/favoriteText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="@dimen/app_margin"
+                            android:layout_toRightOf="@+id/favoriteImage"
+                            android:gravity="center_vertical"
+                            android:text="Favoris"
+                            android:textSize="20dp"/>
+                    </RelativeLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/shareImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/shareImage"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_alignParentTop="true"
+                            android:src="@drawable/ic_share_black_24dp"/>
+
+                        <TextView
+                            android:id="@+id/shareText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="@dimen/app_margin"
+                            android:layout_toRightOf="@+id/shareImage"
+                            android:gravity="center_vertical"
+                            android:text="Partager"
+                            android:textSize="20dp"/>
+                    </RelativeLayout>
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
     </android.support.v7.widget.CardView>
-</FrameLayout>
+</LinearLayout>

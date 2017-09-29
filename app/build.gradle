@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "fr.tnducrocq.kaamelott_soundboard"
         minSdkVersion 21
-        targetSdkVersion 25
-        versionCode 4
-        versionName "3.0"
+        targetSdkVersion 26
+        versionCode 5
+        versionName "3.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -24,19 +24,51 @@ android {
         exclude 'META-INF/LICENSE'
     }
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_7
-        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
+ext {
+    supportVersion = "26.+"
+    constraintLayoutVersion = "1.0.2"
+
+    rxJavaVersion = '2.1.4'
+    rxAndroidVersion = '2.0.1'
+    butterKnifeVersion = "8.5.1"
+
+    okHttpVersion = '2.5.0'
+
+    dependencies = [
+
+            supportAppCompat       : "com.android.support:appcompat-v7:${supportVersion}",
+            supportDesign          : "com.android.support:design:${supportVersion}",
+            supportCardView        : "com.android.support:cardview-v7:${supportVersion}",
+            supporRecyclerView     : "com.android.support:recyclerview-v7:${supportVersion}",
+            supportConstraintLayout: "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}",
+
+            RxJava                 : "io.reactivex.rxjava2:rxjava:${rxJavaVersion}",
+            RxAndroid              : "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}",
+            butterKnife            : "com.jakewharton:butterknife:${butterKnifeVersion}",
+            butterKnifeCompiler    : "com.jakewharton:butterknife-compiler:${butterKnifeVersion}",
+
+            okHttp                 : "com.squareup.okhttp:okhttp:${okHttpVersion}"
+    ]
+}
+
+def libs = ext.dependencies;
+
 dependencies {
+    compile libs.RxAndroid
+    compile libs.RxJava
+
+    compile libs.butterKnife
+    annotationProcessor libs.butterKnifeCompiler
+
+    compile libs.okHttp
 
     compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
-
     compile 'com.orhanobut:hawk:2.0.1'
-
-    compile 'com.jakewharton:butterknife:8.6.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
 
     compile group: 'de.greenrobot', name: 'eventbus', version: '2.4.1'
     compile 'com.afollestad:sectioned-recyclerview:0.4.4'
@@ -44,11 +76,11 @@ dependencies {
         transitive = true
     }
 
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.+'
-    compile 'com.android.support:design:25.+'
-    compile 'com.android.support:cardview-v7:25.+'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile libs.supportAppCompat
+    compile libs.supportDesign
+    compile libs.supportCardView
+    compile libs.supporRecyclerView
+    compile libs.supportConstraintLayout
 
     testCompile 'junit:junit:4.12'
 }

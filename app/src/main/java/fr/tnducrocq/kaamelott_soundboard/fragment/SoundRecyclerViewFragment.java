@@ -1,6 +1,7 @@
 package fr.tnducrocq.kaamelott_soundboard.fragment;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,20 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import de.greenrobot.event.EventBus;
-import fr.tnducrocq.kaamelott_soundboard.FavoriteRecyclerViewAdapter;
-import fr.tnducrocq.kaamelott_soundboard.PersonRecyclerViewAdapter;
 import fr.tnducrocq.kaamelott_soundboard.R;
-import fr.tnducrocq.kaamelott_soundboard.SoundRecyclerViewAdapter;
 import fr.tnducrocq.kaamelott_soundboard.model.Sound;
+import fr.tnducrocq.kaamelott_soundboard.model.source.SoundRepository;
 
-public class SoundRecyclerViewFragment extends Fragment implements FavoriteRecyclerViewAdapter.FavoriteRecyclerViewAdapterListener {
+public class SoundRecyclerViewFragment extends Fragment implements SoundViewAdapterListener {
 
     private static final boolean GRID_LAYOUT = false;
 
@@ -46,34 +44,44 @@ public class SoundRecyclerViewFragment extends Fragment implements FavoriteRecyc
         unbinder = ButterKnife.bind(this, view);
         sortMode = getArguments().getString("sortMode");
 
-        soundList = new ArrayList<>();
-        Collections.addAll(soundList, (Sound[]) getArguments().getParcelableArray("soundArray"));
+        soundList = SoundRepository.getInstance().getSounds();
         setAdapter(soundList);
         return view;
     }
 
+    private ISoundRecyclerViewAdapter adapter;
+
     private void setAdapter(final List<Sound> soundList) {
-        if ("alpha".equals(sortMode)) {
-            SoundRecyclerViewAdapter adapter = new SoundRecyclerViewAdapter(soundList);
-            mRecyclerView.setAdapter(adapter);
-        } else if ("person".equals(sortMode)) {
-            PersonRecyclerViewAdapter adapter = new PersonRecyclerViewAdapter();
+        if ("person".equals(sortMode)) {
+            adapter = new PersonRecyclerViewAdapter(this);
             adapter.init(soundList);
-            mRecyclerView.setAdapter(adapter);
+            mRecyclerView.setAdapter((RecyclerView.Adapter) adapter);
         } else if ("favorite".equals(sortMode)) {
-            FavoriteRecyclerViewAdapter adapter = new FavoriteRecyclerViewAdapter(this);
+            adapter = new FavoriteRecyclerViewAdapter(this);
             adapter.init(soundList);
-            mRecyclerView.setAdapter(adapter);
+            mRecyclerView.setAdapter((RecyclerView.Adapter) adapter);
         } else {
-            mRecyclerView.setAdapter(new SoundRecyclerViewAdapter(soundList));
+            adapter = new SoundRecyclerViewAdapter(this);
+            adapter.init(soundList);
+            mRecyclerView.setAdapter((RecyclerView.Adapter) adapter);
         }
     }
 
     @Override
     public void favoritesHasChange() {
-        FavoriteRecyclerViewAdapter adapter = new FavoriteRecyclerViewAdapter(this);
-        adapter.init(soundList);
-        mRecyclerView.setAdapter(adapter);
+        if (adapter instanceof FavoriteRecyclerViewAdapter) {
+            adapter.init(soundList);
+            mRecyclerView.setAdapter((RecyclerView.Adapter) adapter);
+        }
+    }
+
+    @Override
+    public void share(Sound sound) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "http://kaamelott-soundboard.2ec0b4.fr/#son/" + sound.fileName);
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
     }
 
     @Override

@@ -4,24 +4,25 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.tnducrocq.kaamelott_soundboard.model.base.BaseModel;
-
 /**
  * Created by tony on 29/05/2017.
  */
-public class Sound extends BaseModel implements Parcelable {
+public class Sound implements Parcelable {
 
     public static final String TAG = Sound.class.getSimpleName();
 
     public String character;
     public String episode;
     public String title;
+
+    @SerializedName("file")
+    @Expose
     public String fileName;
 
     public Sound() {
@@ -48,13 +49,6 @@ public class Sound extends BaseModel implements Parcelable {
 
     public String getFileName() {
         return fileName;
-    }
-
-    public void parse(JSONObject object) throws JSONException {
-        title = object.getString("title");
-        character = object.getString("character");
-        fileName = object.getString("file");
-        episode = object.getString("episode");
     }
 
     @Override
